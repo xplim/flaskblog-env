@@ -9,29 +9,17 @@ from application.forms import (
     UpdateAccountForm,
 )
 from application.models import Post, User
-from application.utils import remove_image, save_image
-
-
-posts = [
-    {
-        "author": "Corey Schafer",
-        "title": "Blog Post 1",
-        "content": "First post content",
-        "date_posted": "April 20, 2018",
-    },
-    {
-        "author": "Jane Doe",
-        "title": "Blog Post 2",
-        "content": "Second post content",
-        "date_posted": "April 21, 2018",
-    },
-]
+from application.utils import remove_image, save_image, url_for_author_image
 
 
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template("home.html", posts=posts)
+    return render_template(
+        "home.html",
+        posts=Post.query.all(),
+        url_for_author_image=url_for_author_image,
+    )
 
 
 @app.route("/about")

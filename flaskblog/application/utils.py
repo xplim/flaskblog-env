@@ -1,5 +1,6 @@
 import os
 import secrets
+from flask import url_for
 from PIL import Image
 
 from application import app
@@ -20,3 +21,7 @@ def save_image(form_image):
     image_resized.thumbnail((125, 125))
     image_resized.save(get_image_path(image_file))
     return image_file
+
+
+def url_for_author_image(post):
+    return url_for("static", filename=f"profile_pics/{post.author.image_file}")
