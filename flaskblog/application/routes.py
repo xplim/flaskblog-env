@@ -2,6 +2,7 @@ import os
 import secrets
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
+from PIL import Image
 
 from application import app, bcrypt, db
 from application.forms import LoginForm, RegistrationForm, UpdateAccountForm
@@ -92,7 +93,9 @@ def save_image(form_image):
     image_path = os.path.join(
         app.root_path, "static/profile_pics", image_file
     )
-    form_image.save(image_path)
+    image_resized = Image.open(form_image)
+    image_resized.thumbnail((125, 125))
+    image_resized.save(image_path)
     return image_file
 
 
