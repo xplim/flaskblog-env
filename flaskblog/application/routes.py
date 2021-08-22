@@ -99,6 +99,13 @@ def save_image(form_image):
     return image_file
 
 
+def remove_image(image_file):
+    image_path = os.path.join(
+        app.root_path, "static/profile_pics", image_file
+    )
+    os.remove(image_path)
+
+
 @app.route("/account", methods=["GET", "POST"])
 @login_required
 def account():
@@ -106,7 +113,14 @@ def account():
     if form.validate_on_submit():
         if form.image.data:
             image_file = save_image(form.image.data)
+
+            # Delete old image file.
+            if current_user.image_file != User.DEFAULT_IMAGE_FILE:
+                remove_image(current_user.image_file)
+
+            # Update data.
             current_user.image_file = image_file
+
         current_user.username = form.username.data
         current_user.email = form.email.data
         db.session.commit()
