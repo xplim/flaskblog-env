@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template, request, url_for
+from flask import abort, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 from application import app, bcrypt, db
@@ -124,7 +124,12 @@ def new_post():
         db.session.commit()
         flash("Your post has been updated!", "success")
         return redirect(url_for("home"))
-    return render_template("create_post.html", title="New Post", form=form)
+    return render_template(
+        "create_or_update_post.html",
+        title="New Post",
+        legend="New Post",
+        form=form,
+    )
 
 
 @app.route("/post/<int:post_id>")
@@ -135,4 +140,30 @@ def post(post_id):
         title=post.title,
         post=post,
         url_for_author_image=url_for_author_image,
+    )
+
+
+@app.route("/post/<int:post_id>/update", methods=["GET", "POST"])
+@login_required
+def update_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        abort(403)
+
+    form = PostForm()
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        db.session.commit()
+        flash("Your post has been updated!", "success")
+        return redirect(url_for("post", post_id=post.id))
+    elif request.method == "GET":
+        form.title.data = post.title
+        form.content.data = post.content
+
+    return render_template(
+        "create_or_update_post.html",
+        title="Update Post",
+        legend="Update Post",
+        form=form,
     )
