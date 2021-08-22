@@ -2,8 +2,13 @@ from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
 from application import app, bcrypt, db
-from application.forms import LoginForm, RegistrationForm, UpdateAccountForm
-from application.models import User
+from application.forms import (
+    LoginForm,
+    PostForm,
+    RegistrationForm,
+    UpdateAccountForm,
+)
+from application.models import Post, User
 from application.utils import remove_image, save_image
 
 
@@ -115,3 +120,20 @@ def account():
     return render_template(
         "account.html", title="Account", image_file=image_file, form=form
     )
+
+
+@app.route("/post/new", methods=["GET", "POST"])
+@login_required
+def new_post():
+    form = PostForm()
+    if form.validate_on_submit():
+        post = Post(
+            title=form.title.data,
+            content=form.content.data,
+            author=current_user,
+        )
+        db.session.add(post)
+        db.session.commit()
+        flash("Your post has been updated!", "success")
+        return redirect(url_for("home"))
+    return render_template("create_post.html", title="New Post", form=form)
