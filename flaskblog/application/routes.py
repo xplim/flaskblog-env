@@ -1,12 +1,10 @@
-import os
-import secrets
 from flask import flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required, login_user, logout_user
-from PIL import Image
 
 from application import app, bcrypt, db
 from application.forms import LoginForm, RegistrationForm, UpdateAccountForm
 from application.models import User
+from application.utils import remove_image, save_image
 
 
 posts = [
@@ -85,23 +83,6 @@ def login():
 def logout():
     logout_user()
     return redirect(url_for("home"))
-
-
-def get_image_path(image_file):
-    return os.path.join(app.root_path, "static/profile_pics", image_file)
-
-
-def save_image(form_image):
-    _, f_ext = os.path.splitext(form_image.filename)
-    image_file = f"{secrets.token_hex(8)}{f_ext}"
-    image_resized = Image.open(form_image)
-    image_resized.thumbnail((125, 125))
-    image_resized.save(get_image_path(image_file))
-    return image_file
-
-
-def remove_image(image_file):
-    os.remove(get_image_path(image_file))
 
 
 @app.route("/account", methods=["GET", "POST"])
