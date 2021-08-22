@@ -15,9 +15,11 @@ from application.utils import remove_image, save_image, url_for_author_image
 @app.route("/")
 @app.route("/home")
 def home():
+    page = request.args.get("page", 1, type=int)
+    posts = Post.query.paginate(per_page=5, page=page)
     return render_template(
         "home.html",
-        posts=Post.query.all(),
+        posts=posts,
         url_for_author_image=url_for_author_image,
     )
 
