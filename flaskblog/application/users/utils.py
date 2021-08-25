@@ -1,14 +1,16 @@
 import os
 import secrets
-from flask import url_for
+from flask import current_app, url_for
 from flask_mail import Message
 from PIL import Image
 
-from application import app, mail
+from application import mail
 
 
 def get_image_path(image_file):
-    return os.path.join(app.root_path, "static/profile_pics", image_file)
+    return os.path.join(
+        current_app.root_path, "static/profile_pics", image_file
+    )
 
 
 def remove_image(image_file):
