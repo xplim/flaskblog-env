@@ -37,7 +37,3 @@ def send_reset_email(user):
 If you did not make this request, then simply ignore this email and no changes will be made.
 """
     mail.send(msg)
-
-
-def url_for_author_image(post):
-    return url_for("static", filename=f"profile_pics/{post.author.image_file}")
